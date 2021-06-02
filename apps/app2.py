@@ -33,7 +33,7 @@ tokoAll = ['BIMBO', 'GRANADA', 'KLATEN', 'DINASTI', 'PEDAN', 'SUKOHARJO', 'BOYOL
 frekWaktu = {'Harian': 'tgl_masuk',
              'Mingguan': 'str_to_date(concat(yearweek(fact_PENGADAAN.tgl_masuk), " Sunday"), "%%X%%V %%W")',
              'Bulanan': 'str_to_date(concat(date_format(tgl_masuk, "%%Y-%%m"), "-01"), "%%Y-%%m-%%d")',
-             'Kuartal': 'wk.kuartal',
+             'Kuartal': 'str_to_date(concat(year(tgl_masuk),"-", ((quarter(tgl_masuk)*3)-2),"-01"),"%%Y-%%m-%%d")',
              'Semester': 'wk.semester',
              'Tahunan': 'wk.tahun',
              'Puasa':'wk.puasa',
