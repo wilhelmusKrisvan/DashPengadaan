@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataSource name="amigodw@10.10.14.5">
+<dataSource name="amigodw@10.10.10.38">
   <database-model serializer="dbm" dbms="MARIADB" family-id="MARIADB" format-version="4.20">
     <root id="1">
       <ServerVersion>10.5.9</ServerVersion>

@@ -12,7 +12,7 @@ from sqlalchemy import create_engine
 from app import app
 
 # connect = 'mysql+pymysql://admindw:admindw@192.168.1.1/amigodw'
-connect = 'mysql+pymysql://admindw:admindw@10.10.14.5/amigodw'
+connect = 'mysql+pymysql://admindw:admindw@10.10.10.38/amigodw'
 conn = create_engine(connect)
 
 dd = pd.read_sql('select * from dim_STRIP', conn)
@@ -25,8 +25,8 @@ supplyAll = fd['kode_supplier'].dropna()
 tokoAll = ['BIMBO', 'GRANADA', 'KLATEN', 'DINASTI', 'PEDAN', 'SUKOHARJO', 'BOYOLALI', 'WONOSARI', 'KARANGANYAR']
 frekWaktu = {'Harian': 'tgl_masuk',
              'Mingguan': 'str_to_date(concat(yearweek(fact_PENGADAAN.tgl_masuk), " Sunday"), "%%X%%V %%W")',
-             'Bulanan': 'str_to_date(concat(date_format(tgl_masuk, "%%Y-%%m"), "-01"), "%%Y-%%m-%%d")',
-             'Kuartal': 'str_to_date(concat(year(tgl_masuk),"-", ((quarter(tgl_masuk)*3)-2),"-01"),"%%Y-%%m-%%d")',
+             'Bulanan': 'date_format(tgl_masuk, "%%Y-%%m")',
+             'Kuartal': 'concat(year(tgl_masuk)," ", quarter(tgl_masuk))',
              'Semester': 'wk.semester',
              'Tahunan': 'wk.tahun',
              'Puasa':'wk.puasa',
@@ -37,8 +37,6 @@ frekWaktu = {'Harian': 'tgl_masuk',
              'Natal':'wk.natal',
              'Sekolah':'wk.sekolah'}
 
-
-
 def cardGenerator(judul, satuan, warna):
     card = dbc.Card(
         dbc.CardBody([
@@ -47,7 +45,6 @@ def cardGenerator(judul, satuan, warna):
         ])
     )
     return card
-
 
 card_filterPembelian = dbc.Card([
     dbc.CardBody([
@@ -64,7 +61,7 @@ card_filterPembelian = dbc.Card([
                         className='card-body'
                     ),
                 ]),
-            ], width=2),
+            ], width=3),
             # dbc.Col([
             #     dbc.Card(className='card border-light mb-3' 'card text-white bg-primary mb-3', children=[
             #         html.H6('Supplier: ', style={'margin': '10px 0px 0px 25px', 'color': 'white'},
@@ -142,7 +139,7 @@ card_filterPembelian = dbc.Card([
                             className='card-title'),
                     dcc.Dropdown(
                         id='filter-waktu',
-                        value='str_to_date(concat(date_format(tgl_masuk, "%%Y-%%m"), "-01"), "%%Y-%%m-%%d")',
+                        value='date_format(tgl_masuk, "%%Y-%%m")',
                         clearable=False,
                         style={'width': '100%', 'color': 'black'},
                         className='card-body'
@@ -563,6 +560,7 @@ def update_beli(toko, strip, kategori, startDate, endDate, frekWak):
     if (len(df_beli['tanggal']) != 0 or len(df_beli['total']) != 0):
         fig = px.line(df_beli, x=df_beli['tanggal'], y=df_beli['total'], color=df_beli['status_konsinyasi'],template='plotly_dark')
         fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030')
+        #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         fig.add_bar(name='all', x=df_beliAll['tanggal'], y=df_beliAll['total'])
         return fig, txtBeli
@@ -620,7 +618,7 @@ def update_beliNetto(radio, toko, strip, kategori, startDate, endDate, frekWak):
                           #'and dim_STRIP.kode_strip != "ZZ" '
                           'and {kolom} != %(value)s '
                           'group by {tgl}, {radio} '
-                          'order by {tgl}, {radio} '.format(radio=radio, tgl=frekWak, kolom=frekWak if frekWak in ('wk.nyadran','wk.sisa_puasa','wk.puasa','wk.suro','wk.rasulan','wk.natal','wk.sekolah') else 'wk.tanggal'), conn,
+                          'order by {tgl} '.format(radio=radio, tgl=frekWak, kolom=frekWak if frekWak in ('wk.nyadran','wk.sisa_puasa','wk.puasa','wk.suro','wk.rasulan','wk.natal','wk.sekolah') else 'wk.tanggal'), conn,
                           params={'toko': tuple(toko) if len(toko) != 0 or None else tuple(tokoAll),
                                   # 'supply': tuple(supply) if len(supply) != 0 else tuple(supplyAll),
                                   'kel_jns': tuple(kategori) if len(kategori) != 0 else tuple(col_kategori),
@@ -633,6 +631,7 @@ def update_beliNetto(radio, toko, strip, kategori, startDate, endDate, frekWak):
     if (len(df_beli['tanggal']) != 0 or len(df_beli['total']) != 0):
         fig = px.line(df_beli, x=df_beli['tanggal'], y=df_beli['total'], color=df_beli[radio],template='plotly_dark')
         fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030')
+        #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig.add_scatter(name='all', x=df_belAll['tanggal'], y=df_belAll['total'], marker={'color': 'rgb(0,0,90)'})
         return fig, txtBeli
@@ -691,7 +690,7 @@ def update_beliNonKonsi(radio, toko, strip, kategori, startDate, endDate, frekWa
                           #'and dim_STRIP.kode_strip != "ZZ" '
                           'and {kolom} != %(value)s '
                           'group by {tgl}, {radio} '
-                          'order by {tgl}, {radio} '.format(radio=radio, tgl=frekWak, kolom=frekWak if frekWak in ('wk.nyadran','wk.sisa_puasa','wk.puasa','wk.suro','wk.rasulan','wk.natal','wk.sekolah') else 'wk.tanggal'), conn,
+                          'order by {tgl} '.format(radio=radio, tgl=frekWak, kolom=frekWak if frekWak in ('wk.nyadran','wk.sisa_puasa','wk.puasa','wk.suro','wk.rasulan','wk.natal','wk.sekolah') else 'wk.tanggal'), conn,
                           params={'toko': tuple(toko) if len(toko) != 0 or None else tuple(tokoAll),
                                   #'supply': tuple(supply) if len(supply) != 0 else tuple(supplyAll),
                                   'kel_jns': tuple(kategori) if len(kategori) != 0 else tuple(col_kategori),
@@ -704,6 +703,7 @@ def update_beliNonKonsi(radio, toko, strip, kategori, startDate, endDate, frekWa
     if (len(df_beli['tanggal']) != 0 or len(df_beli['total']) != 0):
         fig = px.line(df_beli, x=df_beli['tanggal'], y=df_beli['total'], color=df_beli[radio],template='plotly_dark')
         fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030')
+        #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig.add_bar(name='all', x=df_belAll['tanggal'], y=df_belAll['total'], marker={'color': 'rgb(0,0,90)'})
         return fig, txtBeli
@@ -779,6 +779,7 @@ def update_retur(toko, strip, kategori, startDate, endDate, frekWak):
     if (len(df_retur['tanggal']) != 0 or len(df_retur['total']) != 0):
         fig = px.line(df_retur, x=df_retur['tanggal'], y=df_retur['total'], color=df_retur['status_konsinyasi'],template='plotly_dark')
         fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030')
+        #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         fig.add_bar(name='all', x=df_returAll['tanggal'], y=df_returAll['total'])
         return fig, txtRetur
@@ -834,7 +835,7 @@ def update_returNetto(radio, toko, strip, kategori, startDate, endDate, frekWak)
                            'and dim_STRIP.kode_strip in %(strip)s '
                            'and {kolom} != %(value)s '
                            'group by {tgl}, {radio} '
-                           'order by {tgl}, {radio} '.format(radio=radio, tgl=frekWak,kolom=frekWak if frekWak in ('wk.nyadran','wk.sisa_puasa','wk.puasa','wk.suro','wk.rasulan','wk.natal','wk.sekolah') else 'wk.tanggal'), conn,
+                           'order by {tgl} ASC '.format(radio=radio, tgl=frekWak,kolom=frekWak if frekWak in ('wk.nyadran','wk.sisa_puasa','wk.puasa','wk.suro','wk.rasulan','wk.natal','wk.sekolah') else 'wk.tanggal'), conn,
                            params={'toko': tuple(toko) if len(toko) != 0 or None else tuple(tokoAll),
                                    #'supply': tuple(supply) if len(supply) != 0 else tuple(supplyAll),
                                    'kel_jns': tuple(kategori) if len(kategori) != 0 else tuple(col_kategori),
@@ -847,6 +848,7 @@ def update_returNetto(radio, toko, strip, kategori, startDate, endDate, frekWak)
     if (len(df_retur['tanggal']) != 0 or len(df_retur['total']) != 0):
         fig = px.line(df_retur, x=df_retur['tanggal'], y=df_retur['total'], color=df_retur[radio],template='plotly_dark')
         fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030')
+        #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig.add_scatter(name='all', x=df_retAll['tanggal'], y=df_retAll['total'], marker={'color': 'rgb(0,0,90)'})
         return fig, txtRetur
@@ -902,7 +904,7 @@ def update_returNonKonsi(radio, toko, strip, kategori, startDate, endDate, frekW
                            'and dim_STRIP.kode_strip in %(strip)s '
                            'and {kolom} != %(value)s '
                            'group by {tgl}, {radio} '
-                           'order by {tgl}, {radio} '.format(radio=radio, tgl=frekWak,kolom=frekWak if frekWak in ('wk.nyadran','wk.sisa_puasa','wk.puasa','wk.suro','wk.rasulan','wk.natal','wk.sekolah') else 'wk.tanggal'), conn,
+                           'order by {tgl} '.format(radio=radio, tgl=frekWak,kolom=frekWak if frekWak in ('wk.nyadran','wk.sisa_puasa','wk.puasa','wk.suro','wk.rasulan','wk.natal','wk.sekolah') else 'wk.tanggal'), conn,
                            params={'toko': tuple(toko) if len(toko) != 0 or None else tuple(tokoAll),
                                    #'supply': tuple(supply) if len(supply) != 0 else tuple(supplyAll),
                                    'kel_jns': tuple(kategori) if len(kategori) != 0 else tuple(col_kategori),
@@ -915,6 +917,7 @@ def update_returNonKonsi(radio, toko, strip, kategori, startDate, endDate, frekW
     if (len(df_retur['tanggal']) != 0 or len(df_retur['total']) != 0):
         fig = px.line(df_retur, x=df_retur['tanggal'], y=df_retur['total'], color=df_retur[radio],template='plotly_dark')
         fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030')
+        #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig.add_bar(name='all', x=df_retAll['tanggal'], y=df_retAll['total'], marker={'color': 'rgb(0,0,90)'})
         return fig, txtRetur

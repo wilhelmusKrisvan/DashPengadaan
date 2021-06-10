@@ -15,7 +15,7 @@ from dash.dependencies import Input, Output, State
 
 from sqlalchemy import create_engine
 
-connect = 'mysql+pymysql://admindw:admindw@10.10.14.5/amigodw'
+connect = 'mysql+pymysql://admindw:admindw@10.10.10.38/amigodw'
 conn = create_engine(connect)
 
 test_dict = {'Harian':['tgl_masuk',1],

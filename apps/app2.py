@@ -16,7 +16,7 @@ from sqlalchemy import create_engine
 
 # connect = 'mysql+pymysql://root:@localhost/amigodw'
 # connect = 'mysql+pymysql://admindw:admindw@192.168.1.1/amigodw'
-connect = 'mysql+pymysql://admindw:admindw@10.10.14.5/amigodw'
+connect = 'mysql+pymysql://admindw:admindw@10.10.10.38/amigodw'
 conn = create_engine(connect)
 
 dd = pd.read_sql('select kode_strip,kel_jns from dim_STRIP ', conn)
@@ -32,8 +32,9 @@ tokoAll = ['BIMBO', 'GRANADA', 'KLATEN', 'DINASTI', 'PEDAN', 'SUKOHARJO', 'BOYOL
 
 frekWaktu = {'Harian': 'tgl_masuk',
              'Mingguan': 'str_to_date(concat(yearweek(fact_PENGADAAN.tgl_masuk), " Sunday"), "%%X%%V %%W")',
-             'Bulanan': 'str_to_date(concat(date_format(tgl_masuk, "%%Y-%%m"), "-01"), "%%Y-%%m-%%d")',
-             'Kuartal': 'str_to_date(concat(year(tgl_masuk),"-", ((quarter(tgl_masuk)*3)-2),"-01"),"%%Y-%%m-%%d")',
+             'Bulanan': 'date_format(tgl_masuk, "%%Y-%%m")',
+             #'Kuartal': 'str_to_date(concat(year(tgl_masuk),"-", ((quarter(tgl_masuk)*3)-2),"-01"),"%%Y-%%m-%%d")',
+             'Kuartal': 'concat(year(tgl_masuk)," ", quarter(tgl_masuk))',
              'Semester': 'wk.semester',
              'Tahunan': 'wk.tahun',
              'Puasa':'wk.puasa',
@@ -137,7 +138,7 @@ card_filterOrder = dbc.Card([
                             className='card-title'),
                     dcc.Dropdown(
                         id='filter-waktuOrder',
-                        value='str_to_date(concat(date_format(tgl_masuk, "%%Y-%%m"), "-01"), "%%Y-%%m-%%d")',
+                        value='date_format(tgl_masuk, "%%Y-%%m")',
                         clearable=False,
                         style={'width': '100%', 'color': 'black'},
                         className='card-body'
@@ -497,6 +498,7 @@ def update_RateRasioOrder(radio_rasio, toko, supply, strip, kategori, startDate,
     if (len(df_rate['tanggal']) != 0 or len(df_rate['rata rata pemesanan (persen)']) != 0):
         fig = px.line(df_rate, x=df_rate['tanggal'], y=df_rate['rata rata pemesanan (persen)'], color=df_rate[radio_rasio], template='plotly_dark')
         fig.update_layout(xaxis=dict(tickvals=df_rate['tanggal'].unique()), paper_bgcolor='#303030')
+        #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig = go.Figure(
         #     data=[
