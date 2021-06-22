@@ -380,7 +380,7 @@ def update_percentOrder(toko, supply, strip, kategori, startDate, endDate, frekW
 )
 def update_SumOrder(toko, supply, strip, kategori, startDate, endDate, frekWak):
     col_kategori = dd['kel_jns'].dropna().unique()
-    df_sumOrder = pd.read_sql('select count(distinct no_faktur) as jml_nota, order_ontime, tk.nama_toko as nama_toko '
+    df_sumOrder = pd.read_sql('select count(distinct no_faktur) as "jumlah nota", order_ontime, tk.nama_toko as "nama toko" '
                               'from fact_PENGADAAN '
                               'inner join dim_STRIP on fact_PENGADAAN.strip_key = dim_STRIP.strip_key '
                               'inner join dim_SUPPLIERR on fact_PENGADAAN.supplier_key = dim_SUPPLIERR.supplier_key '
@@ -400,9 +400,10 @@ def update_SumOrder(toko, supply, strip, kategori, startDate, endDate, frekWak):
                                       'startDate': startDate,
                                       'endDate': endDate,
                                       'value': '-' if frekWak in ('wk.nyadran', 'wk.sisa_puasa', 'wk.puasa', 'wk.suro', 'wk.rasulan','wk.natal','wk.sekolah') else '1',})
-    if(len(df_sumOrder['nama_toko']) !=0 or len(df_sumOrder['jml_nota']) !=0):
-        fig = px.bar(df_sumOrder, x=df_sumOrder['nama_toko'], y=df_sumOrder['jml_nota'], color=df_sumOrder['order_ontime'],template='plotly_dark')
-        fig.update_layout(paper_bgcolor='#303030')
+    if(len(df_sumOrder['nama toko']) !=0 or len(df_sumOrder['jumlah nota']) !=0):
+        fig = px.bar(df_sumOrder, x=df_sumOrder['nama toko'], y=df_sumOrder['jumlah nota'], color=df_sumOrder['order_ontime'],template='plotly_dark')
+        fig.update_layout(paper_bgcolor='#303030',
+                          yaxis=dict(tickformat=",.2f"))
         return fig
     else:
         fig = go.Figure().add_annotation(x=2.5, y=2, text="Tidak Ada Data yang Ditampilkan",
@@ -424,7 +425,7 @@ def update_SumOrder(toko, supply, strip, kategori, startDate, endDate, frekWak):
 )
 def update_RateRasioOrder(radio_rasio, toko, supply, strip, kategori, startDate, endDate, filterDate):
     col_kategori = dd['kel_jns'].dropna().unique()
-    rate_all = pd.read_sql('select y.tanggal, (x.total_tepat/y.total)*100 as "rata rata pemesanan (persen)" from '
+    rate_all = pd.read_sql('select y.tanggal, (x.total_tepat/y.total) as "rata rata pemesanan (persen)" from '
                            '(select {tgl} as "tanggal", '
                            'count(distinct no_faktur) as "total_tepat" from fact_PENGADAAN '
                            'inner join dim_STRIP ds on fact_PENGADAAN.strip_key = ds.strip_key '
@@ -459,7 +460,7 @@ def update_RateRasioOrder(radio_rasio, toko, supply, strip, kategori, startDate,
                                    'startDate': startDate,
                                    'endDate': endDate,
                                    'value': '-' if filterDate in ('wk.nyadran', 'wk.sisa_puasa', 'wk.puasa', 'wk.suro', 'wk.rasulan','wk.natal','wk.sekolah') else '1',})
-    df_rate = pd.read_sql('select x.{radio},y.tanggal, (x.total_tepat/y.total)*100 as "rata rata pemesanan (persen)" from '
+    df_rate = pd.read_sql('select x.{radio},y.tanggal, (x.total_tepat/y.total) as "rata rata pemesanan (persen)" from '
                           '(select {radio}, {tgl} as "tanggal", '
                           'count(distinct no_faktur) as "total_tepat" from fact_PENGADAAN '
                           'inner join dim_STRIP ds on fact_PENGADAAN.strip_key = ds.strip_key '
@@ -497,7 +498,8 @@ def update_RateRasioOrder(radio_rasio, toko, supply, strip, kategori, startDate,
                                   'value': '-' if filterDate in ('wk.nyadran', 'wk.sisa_puasa', 'wk.puasa', 'wk.suro', 'wk.rasulan','wk.natal','wk.sekolah') else '1',})
     if (len(df_rate['tanggal']) != 0 or len(df_rate['rata rata pemesanan (persen)']) != 0):
         fig = px.line(df_rate, x=df_rate['tanggal'], y=df_rate['rata rata pemesanan (persen)'], color=df_rate[radio_rasio], template='plotly_dark')
-        fig.update_layout(xaxis=dict(tickvals=df_rate['tanggal'].unique()), paper_bgcolor='#303030')
+        fig.update_layout(xaxis=dict(tickvals=df_rate['tanggal'].unique()), paper_bgcolor='#303030',
+                          yaxis=dict(tickformat="%"))
         #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig = go.Figure(

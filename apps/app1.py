@@ -559,7 +559,10 @@ def update_beli(toko, strip, kategori, startDate, endDate, frekWak):
     txtBeli = 'Rp ' + f"{beli.iloc[-1]:,.0f}"
     if (len(df_beli['tanggal']) != 0 or len(df_beli['total']) != 0):
         fig = px.line(df_beli, x=df_beli['tanggal'], y=df_beli['total'], color=df_beli['status_konsinyasi'],template='plotly_dark')
-        fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030')
+        fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030',
+                          xaxis_title="Tanggal",
+                          yaxis_title="Total Rupiah (Rupiah)",
+                          yaxis=dict(tickformat=",.2f"))
         #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         fig.add_bar(name='all', x=df_beliAll['tanggal'], y=df_beliAll['total'])
@@ -630,7 +633,10 @@ def update_beliNetto(radio, toko, strip, kategori, startDate, endDate, frekWak):
     txtBeli = 'Rp ' + f"{beli.iloc[-1]:,.0f}"
     if (len(df_beli['tanggal']) != 0 or len(df_beli['total']) != 0):
         fig = px.line(df_beli, x=df_beli['tanggal'], y=df_beli['total'], color=df_beli[radio],template='plotly_dark')
-        fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030')
+        fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030',
+                          xaxis_title="Tanggal",
+                          yaxis_title="Total Rupiah (Rupiah)",
+                          yaxis=dict(tickformat=",.2f"))
         #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig.add_scatter(name='all', x=df_belAll['tanggal'], y=df_belAll['total'], marker={'color': 'rgb(0,0,90)'})
@@ -702,7 +708,11 @@ def update_beliNonKonsi(radio, toko, strip, kategori, startDate, endDate, frekWa
     txtBeli = 'Rp ' + f"{beli.iloc[-1]:,.0f}"
     if (len(df_beli['tanggal']) != 0 or len(df_beli['total']) != 0):
         fig = px.line(df_beli, x=df_beli['tanggal'], y=df_beli['total'], color=df_beli[radio],template='plotly_dark')
-        fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030')
+        fig.update_layout(xaxis=dict(tickvals=df_beli['tanggal'].unique()), paper_bgcolor='#303030',
+                          xaxis_title="Tanggal",
+                          yaxis_title="Total Rupiah (Rupiah)",
+                          yaxis=dict(tickformat=",.2f")
+                          )
         #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig.add_bar(name='all', x=df_belAll['tanggal'], y=df_belAll['total'], marker={'color': 'rgb(0,0,90)'})
@@ -778,7 +788,11 @@ def update_retur(toko, strip, kategori, startDate, endDate, frekWak):
     txtRetur = 'Rp ' + f"{retur.iloc[-1]:,.0f}"
     if (len(df_retur['tanggal']) != 0 or len(df_retur['total']) != 0):
         fig = px.line(df_retur, x=df_retur['tanggal'], y=df_retur['total'], color=df_retur['status_konsinyasi'],template='plotly_dark')
-        fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030')
+        fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030',
+                          xaxis_title="Tanggal",
+                          yaxis_title="Total Rupiah (Rupiah)",
+                          yaxis=dict(tickformat=",.2f")
+                          )
         #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         fig.add_bar(name='all', x=df_returAll['tanggal'], y=df_returAll['total'])
@@ -847,7 +861,11 @@ def update_returNetto(radio, toko, strip, kategori, startDate, endDate, frekWak)
     txtRetur = 'Rp ' + f"{retur.iloc[-1]:,.0f}"
     if (len(df_retur['tanggal']) != 0 or len(df_retur['total']) != 0):
         fig = px.line(df_retur, x=df_retur['tanggal'], y=df_retur['total'], color=df_retur[radio],template='plotly_dark')
-        fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030')
+        fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030',
+                          xaxis_title="Tanggal",
+                          yaxis_title="Total Rupiah (Rupiah)",
+                          yaxis=dict(tickformat=",.2f")
+                          )
         #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig.add_scatter(name='all', x=df_retAll['tanggal'], y=df_retAll['total'], marker={'color': 'rgb(0,0,90)'})
@@ -916,7 +934,11 @@ def update_returNonKonsi(radio, toko, strip, kategori, startDate, endDate, frekW
     txtRetur = 'Rp ' + f"{retur.iloc[-1]:,.0f}"
     if (len(df_retur['tanggal']) != 0 or len(df_retur['total']) != 0):
         fig = px.line(df_retur, x=df_retur['tanggal'], y=df_retur['total'], color=df_retur[radio],template='plotly_dark')
-        fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030')
+        fig.update_layout(xaxis=dict(tickvals=df_retur['tanggal'].unique()), paper_bgcolor='#303030',
+                          xaxis_title="Tanggal",
+                          yaxis_title="Total Rupiah (Rupiah)",
+                          yaxis=dict(tickformat=",.2f")
+                          )
         #fig.update_layout(paper_bgcolor='#303030')
         fig.update_traces(mode='lines+markers')
         # fig.add_bar(name='all', x=df_retAll['tanggal'], y=df_retAll['total'], marker={'color': 'rgb(0,0,90)'})
